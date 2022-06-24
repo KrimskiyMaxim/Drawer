@@ -1,10 +1,9 @@
-
 import SwiftUI
 
 let handleVerticalPadding: CGFloat = 16
 let handleThickness: CGFloat = 5
 
-public struct SnapDrawer<StateType: SnapState, Background : View, Content: View> : View {
+public struct SnapDrawer<StateType: SnapState, Background: View, Content: View>: View {
     private let calculator: SnapPointCalculator<StateType>
 
     private var state: Binding<StateType>?
@@ -47,25 +46,31 @@ public struct SnapDrawer<StateType: SnapState, Background : View, Content: View>
         }
 
         let drag = DragGesture()
-            .updating($dragState) { drag, state, transaction in
-                state = .dragging(translation: drag.translation)
-            }
-            .onEnded(onDragEnded)
+                .updating($dragState) { drag, state, transaction in
+                    state = .dragging(translation: drag.translation)
+                }
+                .onEnded(onDragEnded)
 
         return ZStack {
-            currentResult.state.visible.map { background($0).edgesIgnoringSafeArea(.all) }
+            currentResult.state.visible.map {
+                background($0).edgesIgnoringSafeArea(.all)
+            }
 
             VStack(spacing: 0) {
                 currentResult.state.visible != nil ? Handle() : nil
-                currentResult.state.visible.map { content($0).frame(height: currentResult.contentHeight) }
-                
+                currentResult.state.visible.map {
+                    content($0).frame(height: currentResult.contentHeight)
+                }
+
                 Spacer()
             }
         }
-        .frame(height: UIScreen.main.bounds.height)
-        .offset(y: min(maxDrag + 8, max(minDrag - 8, self.currentResult.offset + self.dragState.translation.height)))
-        .animation(self.dragState.isDragging ? nil : .interpolatingSpring(stiffness: 300.0, damping: 30.0, initialVelocity: 10.0))
-        .gesture(drag)
+                .frame(height: UIScreen.main.bounds.height)
+                .background(Color(.black))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .offset(y: min(maxDrag + 8, max(minDrag - 8, self.currentResult.offset + self.dragState.translation.height)))
+                .animation(self.dragState.isDragging ? nil : .interpolatingSpring(stiffness: 300.0, damping: 30.0, initialVelocity: 10.0))
+                .gesture(drag)
     }
 
     private func onDragEnded(drag: DragGesture.Value) {
@@ -73,12 +78,12 @@ public struct SnapDrawer<StateType: SnapState, Background : View, Content: View>
     }
 }
 
-struct Handle : View {
+struct Handle: View {
     var body: some View {
         RoundedRectangle(cornerRadius: handleThickness / 2.0)
-            .frame(width: 40, height: handleThickness)
-            .foregroundColor(Color.secondary)
-            .padding(.vertical, handleVerticalPadding)
+                .frame(width: 80, height: handleThickness)
+                .foregroundColor(Color.secondary)
+                .padding(.vertical, handleVerticalPadding)
     }
 }
 
